@@ -1,0 +1,166 @@
+body {
+    margin: 0;
+    padding: 0;
+    max-width: 100vw;
+    background-color: #464646;
+}
+
+.navEntry {
+    width: 100%;
+    height: 50px;
+    margin: 0;
+    padding: 0;
+    background-color: #73C0E5;
+    border: solid;
+    border-color: #464646;
+    border-width: 1px;
+    float: left;
+}
+
+.navHeader {
+    width: 100%;
+    height: 50px;
+    margin: 0;
+    padding: 0;
+    background-color: #1482dd;
+    border: solid;
+    border-color: #464646;
+    border-width: 1px;
+    float: left;
+}
+
+.inter-main-header {
+    color: white;
+    font-size: 26px;
+    padding-left: 30px;
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    margin-top: 22px;
+    max-width: 350px;
+}
+
+.inter-nav {
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 15px;
+    padding-left: 20px;
+    float: left;
+  }
+
+.sideNav {
+    height: calc(92vh - 51px); 
+    width:100%;
+    overflow:hidden; 
+    overflow-y:scroll;
+    background-color: #464646;
+
+}
+
+.mainHeader {
+    height: 106px;
+    width: 100%;
+    background-color: #14274E;
+    float: left;
+}
+
+.left-column {
+    display: inline;
+    width: 300px;
+    float: left;
+}
+
+.right-column {
+    display: inline;
+    width: calc(100% - 300px);
+    float: right;
+    position: relative;
+    background-color: #464646;
+
+}
+
+.unpadded-div {
+    padding: 0;
+    margin: 0;
+    border: 0;
+    font-size: 0px;
+}
+
+.nav-entry-button {
+    border: none;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    width: 100%;
+    cursor: pointer;
+}
+
+.data-display {
+    padding: 5vw;
+    position: absolute;
+    background-color: #464646;
+}
+
+.search-box {
+    width: 300px;
+    height: 50px;
+}
+
+.table-class {
+    max-width: 69vw;
+    border: 1px solid #CCC;
+    border-collapse: collapse;
+}
+
+.table-light-left {
+    min-width: 20vw;
+    height: 50px;
+    background-color: #b7d8f3;
+    border: none;
+}
+
+.table-light-right {
+    width: 59vw;
+    height: 50px;
+    background-color: #b7d8f3;
+    border: none;
+}
+
+.table-heavy-left {
+    min-width: 20vw;
+    height: 50px;
+    border: none;
+    background-color: #FFFFFF;
+
+}
+
+.table-heavy-right {
+    width: 59vw;
+    height: 50px;
+    border: none;
+    background-color: #FFFFFF;
+
+}
+
+.right-float-div {
+    float: left;
+    display: inline;
+    flex-wrap: nowrap;
+}
+
+.left-float-div {
+    float: left;
+    display: inline;
+}
+
+.header-image {
+    height: 66px;
+    float: left;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
