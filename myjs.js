@@ -187,8 +187,7 @@ function drawUnsearchedNavPanel(e){
     }
 }
 
-// Initial draw of the navigation panel on the left of the screen
-drawUnsearchedNavPanel();
+
 
 searchField.addEventListener('input', function(e) {
     if (e.target.value == '') {
@@ -198,6 +197,9 @@ searchField.addEventListener('input', function(e) {
         }
     }
 )
+
+// Initial draw of the navigation panel on the left of the screen
+drawUnsearchedNavPanel();
 
 // Function to handle resizing some elements of the page
 function imageWidthHandler() {
