@@ -212,7 +212,12 @@ function navSelector(e) {
 
 function headerSelector(e) {
     let oldEle = selectedNavElement
-    selectedNavElement = e.target.innerText;
+    let text = e.target.parentElement.innerText
+    if (text[text.length - 1] == "&#x23F4" || text[text.length - 1] == "&#x23F7") {
+        selectedNavElement = text.slice(0, text.length - 2).trim()
+    } else {
+        selectedNavElement = text.slice(0, text.length - 2).trim()
+    }
     if (categoriesOpened.indexOf(selectedNavElement) > -1){
         categoriesOpened.splice(categoriesOpened.indexOf(selectedNavElement), 1)
     } else {
@@ -264,14 +269,61 @@ function drawSearched(e) {
         }
     }
     for (var i in cats){
-            document.getElementById('Navigator').innerHTML += 
-            `<div class="unpadded-div">
-                <button class="nav-entry-button">
-                    <div class="navHeader">
-                        <p class="inter-nav" id="${cats[i]}"> ${cats[i]} </p>
-                    </div>
-                </button>
-            </div>`
+        if (i == 0) {
+            if (categoriesOpened.includes(cats[i])){
+                document.getElementById('Navigator').innerHTML += 
+                `<div class="unpadded-div"  style="margin-top: 50px;">
+                    <button class="nav-entry-button">
+                        <div class="navHeader">
+                            <p class="inter-nav" id="${cats[i]}"> ${cats[i]} </p>
+                            <div class="chevron-div">
+                                &#x23F7
+                            </div>
+                        </div>
+                    </button>
+                </div>`
+            } else {
+                document.getElementById('Navigator').innerHTML += 
+                `<div class="unpadded-div"  style="margin-top: 50px;">
+                    <button class="nav-entry-button">
+                        <div class="navHeader">
+                            <p class="inter-nav" id="${cats[i]}"> ${cats[i]} </p>
+                            <div class="chevron-div">
+                                &#x23F4
+                            </div>
+                        </div>
+                    </button>
+                </div>`
+            }
+        } else {
+            if (categoriesOpened.includes(cats[i])){
+                document.getElementById('Navigator').innerHTML += 
+                `<div class="unpadded-div">
+                    <button class="nav-entry-button">
+                        <div class="navHeader">
+                            <p class="inter-nav" id="${cats[i]}"> ${cats[i]} </p>
+                            <div class="chevron-div">
+                                &#x23F7
+                            </div>
+                        </div>
+                    </button>
+                </div>`
+            } else {
+                document.getElementById('Navigator').innerHTML += 
+                `<div class="unpadded-div">
+                    <button class="nav-entry-button">
+                        <div class="navHeader">
+                            <p class="inter-nav" id="${cats[i]}"> ${cats[i]} </p>
+                            <div class="chevron-div">
+                                &#x23F4
+                            </div>
+                        </div>
+                    </button>
+                </div>`
+            }
+        }
+        
+            
             if (categoriesOpened.indexOf(cats[i]) != -1) {
                 for (var j in searchResults) {
                     if (searchResults[j].data_category.includes(cats[i])) {
@@ -322,15 +374,62 @@ function drawSearched(e) {
 // Draw the left hand side navigation panel when nothing is searched
 function drawUnsearchedNavPanel(e){
     document.getElementById('Navigator').innerHTML = ''
+    console.log(categoriesToDraw)
     for (var i in categoriesToDraw){
-        document.getElementById('Navigator').innerHTML += 
-            `<div class="unpadded-div">
-                <button class="nav-entry-button">
-                    <div class="navHeader">
-                        <p class="inter-nav" id="${categoriesToDraw[i]}"> ${categoriesToDraw[i]} </p>
-                    </div>
-                </button>
-            </div>`
+        if (i == 0){
+            if (categoriesOpened.includes(categoriesToDraw[i])){
+                document.getElementById('Navigator').innerHTML += 
+                `<div class="unpadded-div">
+                    <button class="nav-entry-button" style="margin-top: 50px;">
+                        <div class="navHeader">
+                            <p class="inter-nav" id="${categoriesToDraw[i]}"> ${categoriesToDraw[i]}</p>
+                            <div class="chevron-div">
+                                &#x23F7
+                            </div>
+                        </div>
+                    </button>
+                </div>`
+            } else {
+                document.getElementById('Navigator').innerHTML += 
+                `<div class="unpadded-div">
+                    <button class="nav-entry-button"  style="margin-top: 50px;">
+                        <div class="navHeader">
+                            <p class="inter-nav" id="${categoriesToDraw[i]}"> ${categoriesToDraw[i]}</p>
+                            <div class="chevron-div">
+                                &#x23F4
+                            </div>
+                        </div>
+                    </button>
+                </div>`
+            }
+        } else {
+            if (categoriesOpened.includes(categoriesToDraw[i])){
+                document.getElementById('Navigator').innerHTML += 
+                `<div class="unpadded-div">
+                    <button class="nav-entry-button">
+                        <div class="navHeader">
+                            <p class="inter-nav" id="${categoriesToDraw[i]}"> ${categoriesToDraw[i]}</p>
+                            <div class="chevron-div">
+                                &#x23F7
+                            </div>
+                        </div>
+                    </button>
+                </div>`
+            } else {
+                document.getElementById('Navigator').innerHTML += 
+                `<div class="unpadded-div">
+                    <button class="nav-entry-button">
+                        <div class="navHeader">
+                            <p class="inter-nav" id="${categoriesToDraw[i]}"> ${categoriesToDraw[i]}</p>
+                            <div class="chevron-div">
+                                &#x23F4
+                            </div>
+                        </div>
+                    </button>
+                </div>`
+            }
+        }
+        
         if (categoriesOpened.indexOf(categoriesToDraw[i]) != -1) {
             for (var j in metadataSources) {
                 if (metadataSources[j].data_category.includes(categoriesToDraw[i])) {
@@ -400,7 +499,7 @@ function imageWidthHandler() {
         document.getElementById("body").innerHTML = `
         <div class="mainHeader">
             <div class="left-float-div">
-                <p class="inter-main-header">Moreton Bay Knowledge</p>
+                <p class="inter-main-header">Moreton Bay Knowledge Hub Metadata Library</p>
             </div>
             <div class="right-float-div">
                 <img src="images/QUT.png" class="header-image">
@@ -457,7 +556,7 @@ function displayWelcome(e) {
         document.getElementById("body").innerHTML = `
         <div class="mainHeader">
             <div class="left-float-div">
-                <p class="inter-main-header">Moreton Bay Knowledge</p>
+                <p class="inter-main-header">Moreton Bay Knowledge Hub Metadata Library</p>
             </div>
             <div class="right-float-div">
                 <img src="images/QUT.png" class="header-image">
@@ -511,7 +610,7 @@ function displayWelcomeNoEscape(e) {
     document.getElementById("body").innerHTML = `
     <div class="mainHeader">
         <div class="left-float-div">
-            <p class="inter-main-header">Moreton Bay Knowledge</p>
+            <p class="inter-main-header">Moreton Bay Knowledge Hub Metadata Library</p>
         </div>
         <div class="right-float-div">
             <img src="images/QUT.png" class="header-image">

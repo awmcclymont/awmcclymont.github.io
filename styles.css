@@ -10,9 +10,9 @@ body {
     height: 50px;
     margin: 0;
     padding: 0;
-    background-color: #73C0E5;
+    background-color: #525252;
     border: solid;
-    border-color: #464646;
+    border-color: #525252;
     border-width: 1px;
     float: left;
 }
@@ -22,9 +22,9 @@ body {
     height: 50px;
     margin: 0;
     padding: 0;
-    background-color: #d8f3ff;
+    background-color: #606060;
     border: solid;
-    border-color: #464646;
+    border-color: #606060;
     border-width: 1px;
     float: left;
 }
@@ -34,11 +34,35 @@ body {
     height: 50px;
     margin: 0;
     padding: 0;
-    background-color: #1482dd;
+    background-color: #363636;
     border: solid;
-    border-color: #464646;
+    border-color: #363636;
     border-width: 1px;
     float: left;
+    position: relative;
+}
+
+.navHeaderFirst {
+    width: 100%;
+    height: 50px;
+    margin: 0;
+    padding: 0;
+    background-color: #363636;
+    border: solid;
+    border-color: #363636;
+    border-width: 1px;
+    float: left;
+    position: relative;
+    margin-top: 50px;
+}
+
+.chevron-div {
+    position: relative;
+    float: right;
+    color: white;
+    padding-top: 10px;
+    padding-right: 10px;
+    font-size: 20px;
 }
 
 .inter-main-header {
@@ -47,10 +71,10 @@ body {
     padding-left: 30px;
     font-family: "Inter", sans-serif;
     font-optical-sizing: auto;
-    font-weight: 400;
+    font-weight: 500;
     font-style: normal;
-    margin-top: 37.5px;
-    margin-bottom: 37.5px;
+    margin-top: 22px;
+    margin-bottom: 22px;
     margin-right: 30px;
     max-width: 350px;
 }
@@ -78,7 +102,8 @@ body {
 .inter-nav {
     font-family: "Inter", sans-serif;
     font-optical-sizing: auto;
-    font-weight: 400;
+    color: white;
+    font-weight: 300;
     font-style: normal;
     font-size: 12px;
     padding-left: 10px;
@@ -87,18 +112,19 @@ body {
   }
 
 .sideNav {
-    height: calc(100vh - 50px - 106px); 
-    width:100%;
+    height: calc(100vh - 106px); 
+    width: 100%;
+    direction: rtl;
     overflow:hidden; 
     overflow-y:scroll;
     background-color: #464646;
-
+    margin-top: -50px;
 }
 
 .mainHeader {
     height: 106px;
     width: 100%;
-    background-color: #14274E;
+    background-color: #1C3E4F;
     float: left;
 }
 
@@ -122,6 +148,8 @@ body {
     margin: 0;
     border: 0;
     font-size: 0px;
+    position: relative;
+    z-index: 1;
 }
 
 .nav-entry-button {
@@ -134,9 +162,9 @@ body {
 }
 
 .data-display {
-    padding-left: 10vw;
+    padding-left: 8.5vw;
     padding-top: 5vw;
-    padding-right: 10vw;
+    padding-right: 11.5vw;
     padding-bottom: 5vw;
     position: absolute;
     background-color: #464646;
@@ -149,53 +177,100 @@ body {
 }
 
 .search-box {
-    width: 300px;
+    width: 292px;
     height: 50px;
+    background-color: #606060;
+    border-width: 0px;
+    outline: none;
+    color: white;
+    margin-left: 8px;
+    padding-left: 10px;
+    z-index: 99;
+    position: relative;
+}
+
+.search-box::placeholder {
+    color: white;
 }
 
 .table-class {
     table-layout: fixed;
     max-width: calc(100vw - 300px - 20vw);
-    border: 1px solid #CCC;
+    border: 5px solid #FFFFFF;
     border-collapse: collapse;
 }
 
 .table-light-left {
     table-layout: fixed;
-    min-width: 20vw;
+    min-width: 10vw;
+    max-width: 10vw;
     height: 50px;
-    background-color: #b7d8f3;
+    background-color: #565656;
     border: none;
+
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    color: white;
+    font-weight: 300;
+    font-style: normal;
+    font-size: 12px;
+    padding-left: 10px;
 }
 
 .table-light-right {
     table-layout: fixed;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    max-width: calc(100vw - 300px - 41vw);
-    min-width: calc(100vw - 300px - 41vw);
+    max-width: calc(100vw - 300px - 31vw);
+    min-width: calc(100vw - 300px - 31vw);
     height: 50px;
-    background-color: #b7d8f3;
+    background-color: #565656;
     border: none;
+
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    color: white;
+    font-weight: 300;
+    font-style: normal;
+    font-size: 12px;
+    padding: 10px;
 }
 
 .table-heavy-left {
     table-layout: fixed;
-    min-width: 20vw;
+    min-width: 10vw;
+    max-width: 10vw;
     height: 50px;
     border: none;
-    background-color: #FFFFFF;
+    background-color: #464646;
+
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    color: white;
+    font-weight: 300;
+    font-style: normal;
+    font-size: 12px;
+    padding-left: 10px;
 
 }
 
 .table-heavy-right {
     table-layout: fixed;
-    max-width: calc(100vw - 300px - 41vw);
+    max-width: calc(100vw - 300px - 31vw);
+    min-width: calc(100vw - 300px - 31vw);
     height: 50px;
     border: none;
-    background-color: #FFFFFF;
+    background-color: #464646;
     word-wrap: break-word;
     overflow-wrap: break-word;
+
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    color: white;
+    font-weight: 300;
+    font-style: normal;
+    font-size: 12px;
+    padding: 10px;
 
 }
 
@@ -217,4 +292,30 @@ body {
     padding-bottom: 20px;
     padding-left: 10px;
     padding-right: 10px;
+}
+
+#Navigator::-webkit-scrollbar {
+    width: 8px;
+}
+
+#Navigator::-webkit-scrollbar-track {
+    background-color: #e7e7e7;
+    border: 1px solid #cacaca;
+}
+
+#Navigator::-webkit-scrollbar-thumb {
+    background-color: #06BBE7;
+}
+
+#display::-webkit-scrollbar {
+    width: 8px;
+}
+
+#display::-webkit-scrollbar-track {
+    background-color: #e7e7e7;
+    border: 1px solid #cacaca;
+}
+
+#display::-webkit-scrollbar-thumb {
+    background-color: #06BBE7;
 }
