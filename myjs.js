@@ -54,7 +54,7 @@ var headerMapping = {
     "use_constraints": "Use Constraints",
     "point_of_contact": "Point of Contact",
     "browse_graphic": "Browse Graphic",
-    "data_set_credit": "Data Set Credit",
+    "data_set_credit": "Data Set Credit - Where Credited",
     "data_set_size_at_reception": "Data Set Size at Reception",
     "data_category": "Data Category",
     "indirect_spatial_reference": "Indirect Spatial Reference",
@@ -160,7 +160,7 @@ function redrawDataWindow(selectedElement) {
                 document.getElementById('display-table').innerHTML += ` 
                 <tr> 
                     <td class="table-light-left">${headerMapping[i]} </td>
-                    <td class="table-light-right">${drawNode[i]} </td>
+                    <td class="table-light-right">${drawNode[i].split("�").join('')} </td>
                 </tr>
                 `
                 colorTurn = 0;
@@ -168,7 +168,7 @@ function redrawDataWindow(selectedElement) {
                 document.getElementById('display-table').innerHTML += ` 
                 <tr> 
                     <td class="table-heavy-left">${headerMapping[i]} </td>
-                    <td class="table-heavy-right">${drawNode[i]} </td>
+                    <td class="table-heavy-right">${drawNode[i].split("�").join('')} </td>
                 </tr>
                 `
                 colorTurn = 1;
@@ -213,7 +213,7 @@ function navSelector(e) {
 function headerSelector(e) {
     let oldEle = selectedNavElement
     let text = e.target.parentElement.innerText
-    if (text[text.length - 1] == "&#x23F4" || text[text.length - 1] == "&#x23F7") {
+    if (text[text.length - 1] == "&#x23F5" || text[text.length - 1] == "&#x23F7") {
         selectedNavElement = text.slice(0, text.length - 2).trim()
     } else {
         selectedNavElement = text.slice(0, text.length - 2).trim()
@@ -247,7 +247,6 @@ searchField.addEventListener('input', function(e) {
 )
 
 function drawSearched(e) {
-    console.log(document.getElementById("metadata-search").value.toLowerCase())
     var searchResults = [];
     var cats = [];
     document.getElementById('Navigator').innerHTML = ''
@@ -289,7 +288,7 @@ function drawSearched(e) {
                         <div class="navHeader">
                             <p class="inter-nav" id="${cats[i]}"> ${cats[i]} </p>
                             <div class="chevron-div">
-                                &#x23F4
+                                &#x23F5
                             </div>
                         </div>
                     </button>
@@ -315,7 +314,7 @@ function drawSearched(e) {
                         <div class="navHeader">
                             <p class="inter-nav" id="${cats[i]}"> ${cats[i]} </p>
                             <div class="chevron-div">
-                                &#x23F4
+                                &#x23F5
                             </div>
                         </div>
                     </button>
@@ -374,7 +373,6 @@ function drawSearched(e) {
 // Draw the left hand side navigation panel when nothing is searched
 function drawUnsearchedNavPanel(e){
     document.getElementById('Navigator').innerHTML = ''
-    console.log(categoriesToDraw)
     for (var i in categoriesToDraw){
         if (i == 0){
             if (categoriesOpened.includes(categoriesToDraw[i])){
@@ -396,7 +394,7 @@ function drawUnsearchedNavPanel(e){
                         <div class="navHeader">
                             <p class="inter-nav" id="${categoriesToDraw[i]}"> ${categoriesToDraw[i]}</p>
                             <div class="chevron-div">
-                                &#x23F4
+                                &#x23F5
                             </div>
                         </div>
                     </button>
@@ -422,7 +420,7 @@ function drawUnsearchedNavPanel(e){
                         <div class="navHeader">
                             <p class="inter-nav" id="${categoriesToDraw[i]}"> ${categoriesToDraw[i]}</p>
                             <div class="chevron-div">
-                                &#x23F4
+                                &#x23F5
                             </div>
                         </div>
                     </button>
