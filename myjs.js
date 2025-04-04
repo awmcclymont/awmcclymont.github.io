@@ -153,6 +153,12 @@ function redrawDataWindow(selectedElement) {
     }
     document.getElementById('display').innerHTML = ''
     document.getElementById('display').innerHTML += '<table class="table-class" id="display-table">';
+    document.getElementById('display-table').innerHTML += ` 
+                <tr> 
+                    <td class="table-light-left-header"> Metadata Attribute </td>
+                    <td class="table-light-right-header"> Attribute Value </td>
+                </tr>
+                `
     var colorTurn = 0;
     for (var i in drawNode) {  
         if (i != "dataName"){
@@ -247,6 +253,7 @@ searchField.addEventListener('input', function(e) {
 )
 
 function drawSearched(e) {
+    console.log(document.getElementById("metadata-search").value.toLowerCase())
     var searchResults = [];
     var cats = [];
     document.getElementById('Navigator').innerHTML = ''
@@ -373,6 +380,7 @@ function drawSearched(e) {
 // Draw the left hand side navigation panel when nothing is searched
 function drawUnsearchedNavPanel(e){
     document.getElementById('Navigator').innerHTML = ''
+    console.log(categoriesToDraw)
     for (var i in categoriesToDraw){
         if (i == 0){
             if (categoriesOpened.includes(categoriesToDraw[i])){
