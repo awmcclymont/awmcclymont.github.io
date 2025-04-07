@@ -2,6 +2,7 @@ import { DataJson } from "./data.js";
 
 let selectedNavElement = "None"
 
+var oldSearch;
 
 // Create class structure for the metadata entries in the library
 class DataSource {
@@ -486,6 +487,13 @@ drawUnsearchedNavPanel();
 
 // Function to handle resizing some elements of the page
 function imageWidthHandler() {
+    if (document.getElementById("metadata-search") != null) {
+        if (document.getElementById("metadata-search").value != null) {
+            oldSearch = document.getElementById("metadata-search").value
+        } else if (oldSearch != null && document.getElementById("metadata-search").value == null) {
+            document.getElementById("metadata-search").value = oldSearch;
+        }
+    }
     if (window.innerWidth < 800){
         document.getElementById("body").innerHTML = `
         <div class="data-display" id="display">
@@ -499,11 +507,10 @@ function imageWidthHandler() {
             </div>
         `
     } else {
-        let oldSearch = document.getElementById("metadata-search").value
         document.getElementById("body").innerHTML = `
         <div class="mainHeader">
             <div class="left-float-div">
-                <p class="inter-main-header">Moreton Bay Knowledge Hub Metadata Library</p>
+                <p class="inter-main-header">Moreton Bay Knowledge Library</p>
             </div>
             <div class="right-float-div">
                 <img src="images/QUT.png" class="header-image">
@@ -537,7 +544,9 @@ function imageWidthHandler() {
             </div>
         </div>
         `
-        document.getElementById("metadata-search").value = oldSearch
+        if (oldSearch != null) {
+            document.getElementById("metadata-search").value = oldSearch
+        }
         if (document.getElementById("metadata-search").value == null){
             drawUnsearchedNavPanel();
         } else {
@@ -566,7 +575,7 @@ function displayWelcome(e) {
         document.getElementById("body").innerHTML = `
         <div class="mainHeader">
             <div class="left-float-div">
-                <p class="inter-main-header">Moreton Bay Knowledge Hub Metadata Library</p>
+                <p class="inter-main-header">Moreton Bay Knowledge Library</p>
             </div>
             <div class="right-float-div">
                 <img src="images/QUT.png" class="header-image">
@@ -620,7 +629,7 @@ function displayWelcomeNoEscape(e) {
     document.getElementById("body").innerHTML = `
     <div class="mainHeader">
         <div class="left-float-div">
-            <p class="inter-main-header">Moreton Bay Knowledge Hub Metadata Library</p>
+            <p class="inter-main-header">Moreton Bay Knowledge Library</p>
         </div>
         <div class="right-float-div">
             <img src="images/QUT.png" class="header-image">
