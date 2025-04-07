@@ -2,6 +2,7 @@ import { DataJson } from "./data.js";
 
 let selectedNavElement = "None"
 
+
 // Create class structure for the metadata entries in the library
 class DataSource {
     constructor(dataName, citation, description, time_period_of_content, spatial_domain, keywords, access_constraints, use_constraints, point_of_contact, browse_graphic,
@@ -28,7 +29,6 @@ class DataSource {
         this.point_and_vector_object_information = point_and_vector_object_information;
         this.horizontal_coordinate_system_definition = horizontal_coordinate_system_definition;
         this.vertical_coordinate_system_definition = vertical_coordinate_system_definition;
-        this.detailed_description = detailed_description;
         this.overview_description = overview_description;
         this.data_custodian = data_custodian;
         this.resource_description = resource_description;
@@ -62,7 +62,6 @@ var headerMapping = {
     "point_and_vector_object_information": "Point and Vector Object Information",
     "horizontal_coordinate_system_definition": "Horizontal Coordinate System Information",
     "vertical_coordinate_system_definition": "Vertical Coordinate System Definition",
-    "detailed_description": "Detailed Description",
     "overview_description": "Overview Description",
     "data_custodian": "Data  Custodian",
     "resource_description": "Resource Description",
@@ -253,7 +252,6 @@ searchField.addEventListener('input', function(e) {
 )
 
 function drawSearched(e) {
-    console.log(document.getElementById("metadata-search").value.toLowerCase())
     var searchResults = [];
     var cats = [];
     document.getElementById('Navigator').innerHTML = ''
@@ -338,7 +336,7 @@ function drawSearched(e) {
                             `<div class="unpadded-div">
                                 <button class="nav-entry-button">
                                     <div class="navEntrySelected">
-                                        <p class="inter-nav" id="${searchResults[j].dataName}"> ${searchResults[j].dataName} </p>
+                                        <p class="inter-nav-selected" id="${searchResults[j].dataName}"> ${searchResults[j].dataName} </p>
                                     </div>
                                 </button>
                             </div>`
@@ -380,7 +378,6 @@ function drawSearched(e) {
 // Draw the left hand side navigation panel when nothing is searched
 function drawUnsearchedNavPanel(e){
     document.getElementById('Navigator').innerHTML = ''
-    console.log(categoriesToDraw)
     for (var i in categoriesToDraw){
         if (i == 0){
             if (categoriesOpened.includes(categoriesToDraw[i])){
@@ -444,7 +441,7 @@ function drawUnsearchedNavPanel(e){
                         `<div class="unpadded-div">
                             <button class="nav-entry-button">
                                 <div class="navEntrySelected">
-                                    <p class="inter-nav" id="${metadataSources[j].dataName}"> ${metadataSources[j].dataName} </p>
+                                    <p class="inter-nav-selected" id="${metadataSources[j].dataName}"> ${metadataSources[j].dataName} </p>
                                 </div>
                             </button>
                         </div>`
@@ -502,6 +499,7 @@ function imageWidthHandler() {
             </div>
         `
     } else {
+        let oldSearch = document.getElementById("metadata-search").value
         document.getElementById("body").innerHTML = `
         <div class="mainHeader">
             <div class="left-float-div">
@@ -539,7 +537,13 @@ function imageWidthHandler() {
             </div>
         </div>
         `
-        drawUnsearchedNavPanel();
+        document.getElementById("metadata-search").value = oldSearch
+        if (document.getElementById("metadata-search").value == null){
+            drawUnsearchedNavPanel();
+        } else {
+            drawSearched()
+        }
+        
 
         var searchF = document.getElementById("metadata-search")
 
@@ -670,3 +674,11 @@ document.addEventListener('keydown', function(e){
 })
 
 window.addEventListener("resize", imageWidthHandler)
+
+
+const params = new URLSearchParams(window.location.search);
+const q = params.get("search");
+document.getElementById("metadata-search").value = q;
+if (q != null) {
+    drawSearched()
+}

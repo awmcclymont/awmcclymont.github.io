@@ -27,6 +27,9 @@ body {
     border-color: #606060;
     border-width: 1px;
     float: left;
+    font-weight: bold !important;
+    font-optical-sizing: auto;
+
 }
 
 .navHeader {
@@ -120,7 +123,9 @@ body {
     padding-left: 10px;
     padding-top: 5.5px;
     float: left;
-    font-weight: bold;
+    font-weight: bold !important;
+    font-optical-sizing: auto;
+
 }
 
 .sideNav {
