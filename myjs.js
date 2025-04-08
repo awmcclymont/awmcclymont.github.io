@@ -4,6 +4,89 @@ let selectedNavElement = "None"
 
 var oldSearch;
 
+var directories
+
+var clearSidePanel = 0;
+
+class directory {
+
+    children = [];
+
+    parent = null;
+
+    name = null;
+
+    constructor (parent, nestingList) {
+        if (parent != null){
+            this.parent = parent;
+        }
+        if (nestingList != null) {
+            this.name = nestingList[0];
+        }
+        if (nestingList != null) {
+            if (nestingList.length > 0) {
+                if (this.getChildByName(this.name) == null) {
+                    nestingList.splice(0, 1)
+                    this.children.push(new directory(this, nestingList))
+                } else {
+                    nestingList.splice(0, 1)
+                    this.getChildByName(this.name).getChildren.push(new directory(this, nestingList))
+                }
+            }
+        }
+    }
+        
+    getChildren () {
+        return this.children;
+    }
+
+    getParent () {
+        return this.parent;
+    }
+
+    getName () {
+        return this.name;
+    }
+
+    addNesting(nestingList) {
+        if (nestingList.length > 0) {
+            nestingList.splice(0, 1)
+            if (this.getChildByName(nestingList[0]) == null) {
+                this.children.push(new directory(this, nestingList))
+            } else {
+                this.getChildByName(nestingList[0]).addNesting(nestingList)
+            }
+        }
+    }
+
+    getChildByName (name) {
+        for (var i in this.children) {
+            if (this.children[i].getName() == name){
+                return this.children[i];
+            }
+        }
+        return null;
+    }
+
+    getLocation() {
+        if (this.parent.getName() == null) {
+            return this.name;
+        } else {
+            return (this.parent.getLocation() + ", " + this.name)
+        }
+    }
+
+    getRoot() {
+        if (this.name == null){
+            return this
+        } else {
+            return this.parent.getRoot()
+        }
+    }
+}
+
+var rootDirectory = new directory(null, null);
+
 // Create class structure for the metadata entries in the library
 class DataSource {
     constructor(dataName, citation, description, time_period_of_content, spatial_domain, keywords, access_constraints, use_constraints, point_of_contact, browse_graphic,
@@ -134,7 +217,12 @@ for (var i in jsonData) {
             categoriesToDraw.push(dataArray[12].split(", ")[j])
         }
     }
+
+    let nesting = dataArray[12].split(", ")
+    nesting.splice(0,0, "root")
+    rootDirectory.addNesting(nesting)
 }
+
 
 // Give an onclick effect to all elements of the navigation panel on the left
 var buttons = document.querySelectorAll("div.navEntry");
@@ -373,6 +461,8 @@ function drawSearched(e) {
         for (i = 0; i < headers.length; i++) {
             headers[i].onclick = headerSelector
         }
+        var mainHeader = document.querySelectorAll("p.inter-main-header")
+        mainHeader.onclick = headerReset
      
 }
 
@@ -478,12 +568,239 @@ function drawUnsearchedNavPanel(e){
     for (i = 0; i < headers.length; i++) {
         headers[i].onclick = headerSelector
     }
+    var mainHeader = document.querySelectorAll("p.inter-main-header")
+    mainHeader[0].onclick = headerReset
 }
 
 // Initial draw of the navigation panel on the left of the screen
 drawUnsearchedNavPanel();
 
+function headerReset() {
+    displayWelcomeNoEscape();
+}
 
+function calculateDepth(directoryElement) {
+    let depth = 0
+    if (directoryElement.getName() == null){
+        return depth;
+    } else {
+        depth = depth + 1;
+        return 1 + calculateDepth(directoryElement.getParent())
+    }
+}
+
+function drawSideNavPanel (currentNode) {
+    if (currentNode.getName() != null) {
+       if (document.getElementById('Navigator').innerHTML == ''){
+            document.getElementById('Navigator').innerHTML +=
+            `<div class="unpadded-div">
+                <button class="nav-entry-button">
+                    <div class="navEntry${calculateDepth(currentNode)}First">
+                        <p class="inter-nav-${calculateDepth(currentNode)}" id="${currentNode.getLocation()}"> ${currentNode.getName()} </p>
+                    </div>
+                </button>
+            </div>` 
+       } else {
+        document.getElementById('Navigator').innerHTML +=
+        `<div class="unpadded-div">
+            <button class="nav-entry-button">
+                <div class="navEntry${calculateDepth(currentNode)}">
+                    <p class="inter-nav-${calculateDepth(currentNode)}" id="${currentNode.getLocation()}"> ${currentNode.getName()} </p>
+                </div>
+            </button>
+        </div>` 
+       }
+    }
+    for (var i in currentNode.getChildren()) {
+        drawSideNavPanel(currentNode.getChildren()[i])
+    }
+    if (calculateDepth(currentNode) > 1) {
+        document.getElementById('Navigator').innerHTML +=
+        `<div class="unpadded-div">
+            <button class="nav-entry-button">
+                <div class="navEntry${calculateDepth(currentNode)}">
+                    <p class="inter-nav-${calculateDepth(currentNode)}" id="${currentNode.getParent().getLocation()}, Others"> Other </p>
+                </div>
+            </button>
+        </div>` 
+    }
+}
+
+function navOnClickHandle(e) {
+    if (e.target.parentElement.id != '') {
+        selectedNavElement = e.target.parentElement.id
+    } else if (e.target.id != '') {
+        selectedNavElement = e.target.id
+    } else {
+        selectedNavElement = e.target.children[0].id
+    }
+    console.log(selectedNavElement)
+
+    redrawDataDisplaySelected(selectedNavElement, '')
+}
+
+function drawSidePanelWrapper() {
+    document.getElementById('Navigator').innerHTML = ''
+    drawSideNavPanel(rootDirectory.getRoot())
+
+    var buttons = document.getElementsByClassName("nav-entry-button")
+    for (var i in buttons) {
+        if (buttons[i] == buttons.length) {
+            continue;
+        }
+        buttons[i].onclick = navOnClickHandle
+    }
+}
+
+function displaySelectionHandler(e, selectionResults) {
+    let select = e;
+    if (e.target.hasAttribute('id')){
+        select = e.target.id
+    } else {
+        select = e.target.parentElement.id
+    }
+    let drawNode = ''
+    let overviewColumns = ["dataName", "data_set_credit", "time_period_of_content", 
+        "data_category", "keywords", "description", "citation"]
+    for (var i in metadataSources) {
+        if (metadataSources[i].dataName === select) {
+            drawNode = metadataSources[i]
+            break;
+        }
+    }
+    console.log(drawNode)
+    document.getElementById("display").innerHTML = ''
+    document.getElementById('display').innerHTML += "<p>Back </p>"
+    document.getElementById('display').innerHTML += "<p>Overview Metadata </p>"
+    document.getElementById('display').innerHTML += '<table class="table-class" id="display-table-overview">';
+    document.getElementById('display-table-overview').innerHTML += ` 
+                <tr> 
+                    <td class="table-light-left-header"> Metadata Attribute </td>
+                    <td class="table-light-right-header"> Attribute Value </td>
+                </tr>
+                `
+    var colorTurn = 1;
+    for (var i in drawNode) { 
+        console.log(i) 
+        if (overviewColumns.includes(i)) {
+            if (i != "dataName"){
+                if (colorTurn == 1){
+                    document.getElementById('display-table-overview').innerHTML += ` 
+                    <tr> 
+                        <td class="table-light-left">${headerMapping[i]} </td>
+                        <td class="table-light-right">${drawNode[i].split("�").join('')} </td>
+                    </tr>
+                    `
+                    colorTurn = 0;
+                } else {
+                    document.getElementById('display-table-overview').innerHTML += ` 
+                    <tr> 
+                        <td class="table-heavy-left">${headerMapping[i]} </td>
+                        <td class="table-heavy-right">${drawNode[i].split("�").join('')} </td>
+                    </tr>
+                    `
+                    colorTurn = 1;
+                }
+            }
+        }
+    }
+
+    document.getElementById('display').innerHTML += "<p>Technical Metadata </p>"
+    document.getElementById('display').innerHTML += '<table class="table-class" id="display-table-technical">';
+    document.getElementById('display-table-technical').innerHTML += ` 
+                <tr> 
+                    <td class="table-light-left-header"> Metadata Attribute </td>
+                    <td class="table-light-right-header"> Attribute Value </td>
+                </tr>
+                `
+    var colorTurn = 1;
+    for (var i in drawNode) { 
+        if (!overviewColumns.includes(i)) {
+            if (i != "dataName"){
+                if (colorTurn == 1){
+                    document.getElementById('display-table-technical').innerHTML += ` 
+                    <tr> 
+                        <td class="table-light-left">${headerMapping[i]} </td>
+                        <td class="table-light-right">${drawNode[i].split("�").join('')} </td>
+                    </tr>
+                    `
+                    colorTurn = 0;
+                } else {
+                    document.getElementById('display-table-technical').innerHTML += ` 
+                    <tr> 
+                        <td class="table-heavy-left">${headerMapping[i]} </td>
+                        <td class="table-heavy-right">${drawNode[i].split("�").join('')} </td>
+                    </tr>
+                    `
+                    colorTurn = 1;
+                }
+            }
+        }
+    }
+
+
+    // WHEN BACK IS HIT CALL THIS -> redrawDataDisplaySelected(e, selectionResults)
+}
+
+function redrawDataDisplaySelected(search, selectionResults) {
+    document.getElementById("display").innerHTML = ''
+    if (selectionResults.length == 0){
+        var selectionResults = [];
+    
+        if (search.split(", ")[1] === "Others") {
+            for (var i in metadataSources) {
+                if (metadataSources[i].data_category === search.split(", ")[0]) {
+                    selectionResults.push(metadataSources[i])
+                }
+            }
+        } else {
+            for (var i in metadataSources) {
+                if (metadataSources[i].data_category.includes(search)) {
+                    selectionResults.push(metadataSources[i])
+                }
+            }
+        }
+    }
+    document.getElementById('display').innerHTML += '<table class="table-display" id="display-table">';
+    var colorTurn = 0;
+    for (var i in selectionResults) {  
+        if (colorTurn == 1){
+            document.getElementById('display-table').innerHTML += ` 
+            <tr> 
+                <td class="table-display-dark">
+                    <p class="inter-source-header" id="${selectionResults[i].dataName}">Title: ${selectionResults[i].dataName} </p>
+                    <p class="inter-source-date">Time Period of Content: ${selectionResults[i].time_period_of_content} </p>
+                    <p class="inter-source-authors">Authors: ${selectionResults[i].data_set_credit} </p>
+                    <p class="inter-source-description">Description: ${selectionResults[i].description.substr(0, 180)}... </p>
+                </td>
+            </tr>
+            `
+            colorTurn = 0;
+        } else {
+            document.getElementById('display-table').innerHTML += ` 
+            <tr> 
+                <td class="table-display-light" id="${selectionResults[i].dataName}"> 
+                    <p class="inter-source-header" id="${selectionResults[i].dataName}">Title: ${selectionResults[i].dataName} </p>
+                    <p class="inter-source-date">Time Period of Content: ${selectionResults[i].time_period_of_content} </p>
+                    <p class="inter-source-authors">Authors: ${selectionResults[i].data_set_credit} </p>
+                    <p class="inter-source-description">Description: ${selectionResults[i].description.substr(0, 180)}... </p>
+                </td>
+            </tr>
+            `
+            colorTurn = 1;
+        }
+    }
+
+    var buttons = document.getElementsByClassName("table-display-light")
+    for (var i in buttons) {
+        buttons[i].onclick = displaySelectionHandler
+    }
+
+    var buttons = document.getElementsByClassName("table-display-dark")
+    for (var i in buttons) {
+        buttons[i].onclick = displaySelectionHandler
+    }
+}
 
 // Function to handle resizing some elements of the page
 function imageWidthHandler() {
@@ -518,7 +835,7 @@ function imageWidthHandler() {
             </div>
         </div> 
         <div class="left-column">
-            <input type="search" id="metadata-search" name="q" class="search-box" placeholder="Search">
+            <input type="search" id="metadata-search" name="q" class="search-box" placeholder="&#x1F50D Search the Library">
             <nav class="sideNav" id="Navigator">
             
             </nav>
@@ -583,7 +900,7 @@ function displayWelcome(e) {
             </div>
         </div> 
         <div class="left-column">
-            <input type="search" id="metadata-search" name="q" class="search-box" placeholder="Search">
+            <input type="search" id="metadata-search" name="q" class="search-box" placeholder="&#x1F50D Search the Library">
             <nav class="sideNav" id="Navigator">
             
             </nav>
@@ -637,7 +954,7 @@ function displayWelcomeNoEscape(e) {
         </div>
     </div> 
     <div class="left-column">
-        <input type="search" id="metadata-search" name="q" class="search-box" placeholder="Search">
+        <input type="search" id="metadata-search" name="q" class="search-box" placeholder="&#x1F50D Search the Library">
         <nav class="sideNav" id="Navigator">
         
         </nav>
@@ -691,3 +1008,5 @@ document.getElementById("metadata-search").value = q;
 if (q != null) {
     drawSearched()
 }
+
+drawSidePanelWrapper()
