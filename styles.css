@@ -39,8 +39,9 @@ body {
     border-color: #FFFAE5;
     border-width: 1px;
     float: left;
-    margin-top: 50px;
+    margin-top: 0px;
     border-top: 3px solid #12544F;
+    z-index: 1;
 }
 
 .inter-nav-1 {
@@ -266,11 +267,12 @@ body {
 .sideNav {
     height: calc(100vh - 106px); 
     width: 100%;
-    direction: rtl;
     overflow:hidden; 
     overflow-y:scroll;
     background-color: #FFFAE5;
     margin-top: -50px;
+    direction: rtl;
+    position: absolute
 }
 
 .mainHeader {
@@ -286,6 +288,7 @@ body {
     float: left;
     max-height: calc(100vh - 50px - 106px);
     background-color: #FFFAE5;
+
 }
 
 .right-column {
@@ -302,8 +305,38 @@ body {
     border: 0;
     font-size: 0px;
     position: relative;
-    z-index: 1;
     background-color: #FFFAE5;
+    height: 50px;
+    width: 300px;
+}
+
+.search-div {
+    height: 50px;
+    width: 300px;
+
+    max-height: 50px;
+    cursor: default;
+}
+
+.div-floated-left {
+    float: left;
+    display: inline;
+    margin-right: 10px;
+    margin-top: 2px;
+}
+
+.search-filters-div {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-top: 13px;
+    margin-left: 20px;
+    z-index: 2;
+    display: inline;    
+}
+
+.side-nav-wrapper {
+    position: relative;
 }
 
 .nav-entry-button {
@@ -338,15 +371,30 @@ body {
     border-width: 0px;
     outline: none;
     color: #543723;
-    margin-left: 8px;
     padding-left: 10px;
     z-index: 99;
-    position: relative;
+
     border-radius: 100px;
     margin: 10px;
-    margin-left: 50px;
+    margin-left: 20px;
     border: solid 2px;
     border-color: #543723;
+    position: relative;
+    float: left;
+
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-size: 12px;
+    padding-left: 10px;
+    padding-top: 2px;
+    float: left;
+    font-weight: 500;
+    font-optical-sizing: auto;
+}
+
+.search-box:focus::placeholder {
+    color: transparent;
 }
 
 .search-box::placeholder {
@@ -354,11 +402,52 @@ body {
     text-align: center;
 }
 
+.filters-button {
+    width: 60px;
+    height: 30px;
+    background-color: #F7BF6B;
+    border-width: 0px;
+    outline: none;
+    color: #543723;
+    margin: 5px;
+    margin-top: 10px;
+    border: solid 2px;
+    border-color: #543723;
+    position: relative;
+    float: right;
+    z-index: 99;
+    cursor: pointer;
+    border-radius: 20px;
+
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-size: 12px;
+    padding-top: 1px;
+    float: left;
+    font-weight: 500;
+    font-optical-sizing: auto;
+}
+
 .table-class {
     table-layout: fixed;
     max-width: calc(100vw - 300px - 20vw);
-    border: 1px solid #161616;
+    border: 1px solid #543723;
     border-collapse: collapse;
+}
+
+.inter-filter-labels {
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-size: 12px;
+    padding-top: 2px;
+    padding-left: 3px;
+    float: left;
+    font-weight: 500;
+    font-optical-sizing: auto;
+    color: #543723;
+    float: right;
 }
 
 .table-display {
@@ -416,10 +505,11 @@ body {
     font-family: "Inter", sans-serif;
     font-optical-sizing: auto;
     color: #543723;
-    font-weight: 400;
+    font-weight: 700;
     font-style: normal;
-    font-size: 12px;
-    padding-left: 10px;
+    font-size: 20px;
+    margin-top: 8px;
+    padding-left: 0px;
     padding-right: 10px;
 }
 
@@ -427,10 +517,11 @@ body {
     font-family: "Inter", sans-serif;
     font-optical-sizing: auto;
     color: #543723;
-    font-weight: 400;
+    font-weight: 500;
     font-style: normal;
-    font-size: 12px;
-    padding-left: 10px;
+    font-size: 14px;
+    padding-left: 0px;
+    margin-top: -15px;
     padding-right: 10px;
 }
 
@@ -441,7 +532,7 @@ body {
     font-weight: 400;
     font-style: normal;
     font-size: 12px;
-    padding-left: 10px;
+    padding-left: 0px;
     padding-right: 10px;
 }
 
@@ -452,8 +543,31 @@ body {
     font-weight: 400;
     font-style: normal;
     font-size: 12px;
-    padding-left: 10px;
+    padding-left: 0px;
     padding-right: 10px;
+    margin-top: -6px;
+    margin-bottom: 8px;
+}
+
+.inter-display-over-table {
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    color: #543723;
+    font-weight: 700;
+    font-style: normal;
+    font-size: 16px;
+}
+
+.back-text {
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    color: #543723;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 14px;
+    text-decoration: underline;
+    cursor: pointer;
+    max-width: 40px;
 }
 
 .table-light-left {
@@ -467,7 +581,7 @@ body {
     font-family: "Inter", sans-serif;
     font-optical-sizing: auto;
     color: #543723;
-    font-weight: 300;
+    font-weight: 400;
     font-style: normal;
     font-size: 12px;
     padding-left: 10px;
@@ -524,7 +638,7 @@ body {
     font-family: "Inter", sans-serif;
     font-optical-sizing: auto;
     color: #543723;
-    font-weight: 300;
+    font-weight: 400;
     font-style: normal;
     font-size: 12px;
     padding: 10px;
@@ -541,7 +655,7 @@ body {
     font-family: "Inter", sans-serif;
     font-optical-sizing: auto;
     color: #543723;
-    font-weight: 300;
+    font-weight: 400;
     font-style: normal;
     font-size: 12px;
     padding-left: 10px;
@@ -561,7 +675,7 @@ body {
     font-family: "Inter", sans-serif;
     font-optical-sizing: auto;
     color: #543723;
-    font-weight: 300;
+    font-weight: 400;
     font-style: normal;
     font-size: 12px;
     padding: 10px;

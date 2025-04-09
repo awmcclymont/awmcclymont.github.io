@@ -163,6 +163,7 @@ var headerMapping = {
 var metadataSources = [];
 var categoriesToDraw = [];
 var categoriesOpened = [];
+var drawFilters = false;
 
 // Read in json data of the metadata library
 var jsonData = JSON.parse(DataJson)
@@ -331,14 +332,10 @@ function headerSelector(e) {
 // Establish the search box as a variable
 const searchField = document.getElementById("metadata-search")
 
+
 searchField.addEventListener('input', function(e) {
-    if (e.target.value == '') {
-        drawUnsearchedNavPanel(e);
-    } else {
-        drawSearched(e)
-        }
-    }
-)
+    filterSearch()
+})
 
 function drawSearched(e) {
     var searchResults = [];
@@ -461,9 +458,7 @@ function drawSearched(e) {
         for (i = 0; i < headers.length; i++) {
             headers[i].onclick = headerSelector
         }
-        var mainHeader = document.querySelectorAll("p.inter-main-header")
-        mainHeader.onclick = headerReset
-     
+    
 }
 
 // Draw the left hand side navigation panel when nothing is searched
@@ -593,7 +588,8 @@ function drawSideNavPanel (currentNode) {
     if (currentNode.getName() != null) {
        if (document.getElementById('Navigator').innerHTML == ''){
             document.getElementById('Navigator').innerHTML +=
-            `<div class="unpadded-div">
+            `<div class="unpadded-div"></div>
+            <div class="unpadded-div">
                 <button class="nav-entry-button">
                     <div class="navEntry${calculateDepth(currentNode)}First">
                         <p class="inter-nav-${calculateDepth(currentNode)}" id="${currentNode.getLocation()}"> ${currentNode.getName()} </p>
@@ -634,7 +630,6 @@ function navOnClickHandle(e) {
     } else {
         selectedNavElement = e.target.children[0].id
     }
-    console.log(selectedNavElement)
 
     redrawDataDisplaySelected(selectedNavElement, '')
 }
@@ -668,10 +663,9 @@ function displaySelectionHandler(e, selectionResults) {
             break;
         }
     }
-    console.log(drawNode)
     document.getElementById("display").innerHTML = ''
-    document.getElementById('display').innerHTML += "<p>Back </p>"
-    document.getElementById('display').innerHTML += "<p>Overview Metadata </p>"
+    document.getElementById('display').innerHTML += `<p class="back-text">Back </p>`
+    document.getElementById('display').innerHTML += `<p class="inter-display-over-table">Overview Metadata </p>`
     document.getElementById('display').innerHTML += '<table class="table-class" id="display-table-overview">';
     document.getElementById('display-table-overview').innerHTML += ` 
                 <tr> 
@@ -680,8 +674,7 @@ function displaySelectionHandler(e, selectionResults) {
                 </tr>
                 `
     var colorTurn = 1;
-    for (var i in drawNode) { 
-        console.log(i) 
+    for (var i in drawNode) {  
         if (overviewColumns.includes(i)) {
             if (i != "dataName"){
                 if (colorTurn == 1){
@@ -705,7 +698,9 @@ function displaySelectionHandler(e, selectionResults) {
         }
     }
 
-    document.getElementById('display').innerHTML += "<p>Technical Metadata </p>"
+
+    document.getElementById('display').innerHTML += "<br>"
+    document.getElementById('display').innerHTML += `<p class="inter-display-over-table">Technical Metadata </p>`
     document.getElementById('display').innerHTML += '<table class="table-class" id="display-table-technical">';
     document.getElementById('display-table-technical').innerHTML += ` 
                 <tr> 
@@ -738,13 +733,15 @@ function displaySelectionHandler(e, selectionResults) {
         }
     }
 
-
-    // WHEN BACK IS HIT CALL THIS -> redrawDataDisplaySelected(e, selectionResults)
+    var back = document.getElementsByClassName("back-text")[0]
+    back.onclick = function () {
+        filterSearch()
+    }
 }
 
 function redrawDataDisplaySelected(search, selectionResults) {
     document.getElementById("display").innerHTML = ''
-    if (selectionResults.length == 0){
+    if (selectionResults.length == 0 && selectionResults != "NO RESULTS"){
         var selectionResults = [];
     
         if (search.split(", ")[1] === "Others") {
@@ -763,15 +760,20 @@ function redrawDataDisplaySelected(search, selectionResults) {
     }
     document.getElementById('display').innerHTML += '<table class="table-display" id="display-table">';
     var colorTurn = 0;
-    for (var i in selectionResults) {  
+    for (var i in selectionResults) { 
+        var data_set_cred = ''
+        if (selectionResults[i].data_set_credit.includes(";")) {
+            data_set_cred = selectionResults[i].data_set_credit.split(";")[0]
+        } else {
+            data_set_cred = selectionResults[i].data_set_credit
+        } 
         if (colorTurn == 1){
             document.getElementById('display-table').innerHTML += ` 
             <tr> 
-                <td class="table-display-dark">
-                    <p class="inter-source-header" id="${selectionResults[i].dataName}">Title: ${selectionResults[i].dataName} </p>
-                    <p class="inter-source-date">Time Period of Content: ${selectionResults[i].time_period_of_content} </p>
-                    <p class="inter-source-authors">Authors: ${selectionResults[i].data_set_credit} </p>
-                    <p class="inter-source-description">Description: ${selectionResults[i].description.substr(0, 180)}... </p>
+                <td class="table-display-dark" id="${selectionResults[i].dataName}">
+                    <p class="inter-source-header" id="${selectionResults[i].dataName}">${selectionResults[i].dataName} </p>
+                    <p class="inter-source-authors">${data_set_cred.split(";")[0]}, ${selectionResults[i].time_period_of_content}</p>
+                    <p class="inter-source-description">${selectionResults[i].description.substr(0, 300).split("�").join('')}... </p>
                 </td>
             </tr>
             `
@@ -780,10 +782,9 @@ function redrawDataDisplaySelected(search, selectionResults) {
             document.getElementById('display-table').innerHTML += ` 
             <tr> 
                 <td class="table-display-light" id="${selectionResults[i].dataName}"> 
-                    <p class="inter-source-header" id="${selectionResults[i].dataName}">Title: ${selectionResults[i].dataName} </p>
-                    <p class="inter-source-date">Time Period of Content: ${selectionResults[i].time_period_of_content} </p>
-                    <p class="inter-source-authors">Authors: ${selectionResults[i].data_set_credit} </p>
-                    <p class="inter-source-description">Description: ${selectionResults[i].description.substr(0, 180)}... </p>
+                    <p class="inter-source-header" id="${selectionResults[i].dataName}">${selectionResults[i].dataName} </p>
+                    <p class="inter-source-authors">${data_set_cred}, ${selectionResults[i].time_period_of_content}</p>
+                    <p class="inter-source-description">${selectionResults[i].description.substr(0, 300).split("�").join('')}... </p>
                 </td>
             </tr>
             `
@@ -793,17 +794,124 @@ function redrawDataDisplaySelected(search, selectionResults) {
 
     var buttons = document.getElementsByClassName("table-display-light")
     for (var i in buttons) {
+        if (buttons[i] == buttons.length){
+            continue;
+        }
         buttons[i].onclick = displaySelectionHandler
     }
 
     var buttons = document.getElementsByClassName("table-display-dark")
     for (var i in buttons) {
+        if (buttons[i] == buttons.length){
+            continue;
+        }
         buttons[i].onclick = displaySelectionHandler
+    }
+}
+
+function filterSearch () {
+    let searchText = document.getElementById("metadata-search").value.toLowerCase()
+    if (drawFilters == true) {
+        var results = []
+        if (document.getElementById("available-in-platform").value == "yes") {
+            for (var i in metadataSources) {
+                if (metadataSources[i].available_in_platform == "Yes") {
+                    results.push(metadataSources[i]);
+                }
+            }
+        } else if (document.getElementById("available-in-platform").value == "no") {
+            for (var i in metadataSources) {
+                if (metadataSources[i].available_in_platform == "No") {
+                    results.push(metadataSources[i]);
+                }
+            }
+        } else {
+            for (var i in metadataSources) {
+                results.push(metadataSources[i])
+            }
+        }
+        let amendedResults = []
+        for (var i in results){
+            for (var j in results[i]){
+                let compare = results[i][j].toLowerCase()
+                if (searchText == ""){
+                    amendedResults.push(results[i])
+                    break;
+                } else {
+                    if (compare.includes(searchText)){
+                        amendedResults.push(results[i])
+                        break;
+                    }
+                }
+            }
+        }
+        results = amendedResults
+
+        if (results.length == 0){
+            redrawDataDisplaySelected('', "NO RESULTS")
+        } else{
+            redrawDataDisplaySelected('', results)
+        }
+    } else {
+        var results = []
+        for (var i in metadataSources) {
+            for (var j in metadataSources[i]) {
+                if (metadataSources[i][j].toLowerCase().includes(searchText.toLowerCase()) > 0) {
+                    results.push(metadataSources[i]);
+                    break;
+                }
+            }
+        }
+        redrawDataDisplaySelected('', results)
+    }
+}
+
+function toggleFilters () {
+    if (drawFilters == false) {
+        drawFilters = true
+        let ele = document.getElementById("right-column")
+        ele.insertAdjacentHTML("afterbegin", `<div class="search-filters-div" id="filters">
+        <div class="div-floated-left">
+            <select id="available-in-platform" name="platform">
+                <option value="none" selected> </option>
+                <option value="yes"> Yes </option>
+                <option value="no"> No </option>
+                <option value="all"> All </option>
+            </select>
+            <label for="available-in-platform" class="inter-filter-labels"> Available in Platform </label>
+        </div>
+        <div class="div-floated-left"> 
+            <input type="checkbox" id="data-custodian" name="Data Custodian"> 
+            <label for="data-custodian" class="inter-filter-labels"> Data Custodian </label>
+        </div>
+        <div class="div-floated-left"> 
+            <input type="checkbox" id="data-category" name="Data Category"> 
+            <label for="data-category" class="inter-filter-labels"> Data Category </label>
+        </div>
+
+        </div> `)
+
+        document.getElementById("available-in-platform").addEventListener('change', function(e) {
+            filterSearch()
+        })
+
+        document.getElementById("data-custodian").addEventListener('change', function(e) {
+            filterSearch()
+        })
+
+        document.getElementById("data-category").addEventListener('change', function(e) {
+            filterSearch()
+        })
+        
+    } else {
+        drawFilters = false
+        document.getElementById("filters").remove()
     }
 }
 
 // Function to handle resizing some elements of the page
 function imageWidthHandler() {
+    drawFilters = false;
     if (document.getElementById("metadata-search") != null) {
         if (document.getElementById("metadata-search").value != null) {
             oldSearch = document.getElementById("metadata-search").value
@@ -835,12 +943,17 @@ function imageWidthHandler() {
             </div>
         </div> 
         <div class="left-column">
-            <input type="search" id="metadata-search" name="q" class="search-box" placeholder="&#x1F50D Search the Library">
-            <nav class="sideNav" id="Navigator">
-            
-            </nav>
+            <div class="side-nav-wrapper">
+                <div class="search-div">
+                    <input type="search" id="metadata-search" name="q" class="search-box" placeholder="&#x1F50D Search the Library">
+                    <button class="filters-button"> Filters </button>
+                </div>
+                <nav class="sideNav" id="Navigator">
+                
+                </nav>
+            </div>
         </div>
-        <div class="right-column">
+        <div class="right-column" id="right-column">
             <div class="data-display" id="display">
                 <p class="inter-intro-header"> Welcome to the Moreton Bay Knowledge Metadata Library</p>
                 <p class="inter-paragraph-white"> 
@@ -865,22 +978,23 @@ function imageWidthHandler() {
             document.getElementById("metadata-search").value = oldSearch
         }
         if (document.getElementById("metadata-search").value == null){
-            drawUnsearchedNavPanel();
-        } else {
-            drawSearched()
+            filterSearch()
         }
         
 
         var searchF = document.getElementById("metadata-search")
 
         searchF.addEventListener('input', function(e) {
-            if (e.target.value == '') {
-                drawUnsearchedNavPanel(e);
-            } else {
-                drawSearched(e)
-                }
-            }
-        )
+            filterSearch()
+        })
+
+        var filtersButton = document.getElementsByClassName("filters-button")
+        filtersButton[0].onclick = toggleFilters
+
+        var mainHeader = document.querySelectorAll("p.inter-main-header")
+        mainHeader[0].onclick = headerReset
+
+        drawSidePanelWrapper();
     }
 }
 
@@ -900,12 +1014,15 @@ function displayWelcome(e) {
             </div>
         </div> 
         <div class="left-column">
-            <input type="search" id="metadata-search" name="q" class="search-box" placeholder="&#x1F50D Search the Library">
+                <div class="search-div">
+                    <input type="search" id="metadata-search" name="q" class="search-box" placeholder="&#x1F50D Search the Library">
+                    <button class="filters-button"> Filters </button>
+                </div>
             <nav class="sideNav" id="Navigator">
             
             </nav>
         </div>
-        <div class="right-column">
+        <div class="right-column" id="right-column">
             <div class="data-display" id="display">
                 <p class="inter-intro-header"> Welcome to the Moreton Bay Knowledge Metadata Library</p>
                 <p class="inter-paragraph-white"> 
@@ -926,18 +1043,17 @@ function displayWelcome(e) {
             </div>
         </div>
         `
-        drawUnsearchedNavPanel();
+
+        var mainHeader = document.querySelectorAll("p.inter-main-header")
+        mainHeader[0].onclick = headerReset
+
+        drawSidePanelWrapper();
 
         var searchF = document.getElementById("metadata-search")
 
         searchF.addEventListener('input', function(e) {
-            if (e.target.value == '') {
-                drawUnsearchedNavPanel(e);
-            } else {
-                drawSearched(e)
-                }
-            }
-        )
+            filterSearch()
+        })
     }
 }
 
@@ -954,12 +1070,15 @@ function displayWelcomeNoEscape(e) {
         </div>
     </div> 
     <div class="left-column">
-        <input type="search" id="metadata-search" name="q" class="search-box" placeholder="&#x1F50D Search the Library">
+        <div class="search-div">
+            <input type="search" id="metadata-search" name="q" class="search-box" placeholder="&#x1F50D Search the Library">
+            <button class="filters-button"> Filters </button>
+        </div>
         <nav class="sideNav" id="Navigator">
         
         </nav>
     </div>
-    <div class="right-column">
+    <div class="right-column" id="right-column">
         <div class="data-display" id="display">
             <p class="inter-intro-header"> Welcome to the Moreton Bay Knowledge Metadata Library</p>
             <p class="inter-paragraph-white"> 
@@ -980,18 +1099,16 @@ function displayWelcomeNoEscape(e) {
         </div>
     </div>
     `
-    drawUnsearchedNavPanel();
+    drawSidePanelWrapper();
+
+    var mainHeader = document.querySelectorAll("p.inter-main-header")
+    mainHeader[0].onclick = headerReset
 
     var searchF = document.getElementById("metadata-search")
 
     searchF.addEventListener('input', function(e) {
-        if (e.target.value == '') {
-            drawUnsearchedNavPanel(e);
-        } else {
-            drawSearched(e)
-            }
-        }
-    )
+        filterSearch()
+    })
 }
 
 
@@ -1010,3 +1127,13 @@ if (q != null) {
 }
 
 drawSidePanelWrapper()
+
+var mainHeader = document.querySelectorAll("p.inter-main-header")
+mainHeader[0].onclick = headerReset
+
+
+var searchF = document.getElementById("metadata-search")
+
+searchF.addEventListener('input', function(e) {
+    filterSearch()
+})
