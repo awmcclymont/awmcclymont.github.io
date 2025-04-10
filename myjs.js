@@ -679,11 +679,14 @@ function displaySelectionHandler(e, selectionResults) {
     for (var i in drawNode) {  
         if (overviewColumns.includes(i)) {
             if (i != "dataName"){
+                if (drawNode[i].includes("https")){
+                    console.log(drawNode[i])
+                }
                 if (colorTurn == 1){
                     document.getElementById('display-table-overview').innerHTML += ` 
                     <tr> 
                         <td class="table-light-left">${headerMapping[i]} </td>
-                        <td class="table-light-right">${drawNode[i].split("�").join('')} </td>
+                        <td class="table-light-right">${drawNode[i].split("�").join('').replace(/(https:\/\/[^\s()]+)(?=[^\w/]*|$)/g, '<a href="$1" target="_blank">$1</a>')} </td>
                     </tr>
                     `
                     colorTurn = 0;
@@ -691,7 +694,7 @@ function displaySelectionHandler(e, selectionResults) {
                     document.getElementById('display-table-overview').innerHTML += ` 
                     <tr> 
                         <td class="table-heavy-left">${headerMapping[i]} </td>
-                        <td class="table-heavy-right">${drawNode[i].split("�").join('')} </td>
+                        <td class="table-heavy-right">${drawNode[i].split("�").join('').replace(/(https:\/\/[^\s()]+)(?=[^\w/]*|$)/g, '<a href="$1" target="_blank">$1</a>')} </td>
                     </tr>
                     `
                     colorTurn = 1;
@@ -718,7 +721,7 @@ function displaySelectionHandler(e, selectionResults) {
                     document.getElementById('display-table-technical').innerHTML += ` 
                     <tr> 
                         <td class="table-light-left">${headerMapping[i]} </td>
-                        <td class="table-light-right">${drawNode[i].split("�").join('')} </td>
+                        <td class="table-light-right">${drawNode[i].split("�").join('').replace(/(https:\/\/[^\s()]+)(?=[^\w/]*|$)/g, '<a href="$1" target="_blank">$1</a>')} </td>
                     </tr>
                     `
                     colorTurn = 0;
@@ -726,7 +729,7 @@ function displaySelectionHandler(e, selectionResults) {
                     document.getElementById('display-table-technical').innerHTML += ` 
                     <tr> 
                         <td class="table-heavy-left">${headerMapping[i]} </td>
-                        <td class="table-heavy-right">${drawNode[i].split("�").join('')} </td>
+                        <td class="table-heavy-right">${drawNode[i].split("�").join('').replace(/(https:\/\/[^\s()]+)(?=[^\w/]*|$)/g, '<a href="$1" target="_blank">$1</a>')} </td>
                     </tr>
                     `
                     colorTurn = 1;
