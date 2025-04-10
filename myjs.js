@@ -630,6 +630,8 @@ function navOnClickHandle(e) {
     } else {
         selectedNavElement = e.target.children[0].id
     }
+    toggleFilters()
+    toggleFilters()
 
     redrawDataDisplaySelected(selectedNavElement, '')
 }
@@ -741,8 +743,19 @@ function displaySelectionHandler(e, selectionResults) {
 
 function redrawDataDisplaySelected(search, selectionResults) {
     document.getElementById("display").innerHTML = ''
-    if (selectionResults.length == 0 && selectionResults != "NO RESULTS"){
-        var selectionResults = [];
+    if (selectionResults == "NO SEARCH RESULTS") {
+        document.getElementById('display').innerHTML += '<table class="table-display" id="display-table">';
+        document.getElementById('display-table').innerHTML += ` 
+            <tr> 
+                <td class="table-display-no-results" id="no-results">
+                    <p class="inter-source-header""> No Results Found </p>
+                </td>
+            </tr>
+            `
+    }
+
+    if (selectionResults.length == 0 || selectionResults == "NO RESULTS"){
+        selectionResults = [];
     
         if (search.split(", ")[1] === "Others") {
             for (var i in metadataSources) {
@@ -830,25 +843,56 @@ function filterSearch () {
                 results.push(metadataSources[i])
             }
         }
-        let amendedResults = []
-        for (var i in results){
-            for (var j in results[i]){
-                let compare = results[i][j].toLowerCase()
-                if (searchText == ""){
-                    amendedResults.push(results[i])
-                    break;
-                } else {
-                    if (compare.includes(searchText)){
-                        amendedResults.push(results[i])
-                        break;
+
+        const categoryEle = document.getElementById('category');
+        const categoryVals = Array.from(categoryEle.selectedOptions).map(option => option.value);
+        
+        const custodianEle = document.getElementById('custodian');
+        const custodianVals = Array.from(custodianEle.selectedOptions).map(option => option.value);
+        let new_results = []
+        console.log(categoryVals)
+        if (categoryVals[0] != 'none') {
+            for (var i in results) {
+                for (var j in categoryVals) {
+                    if (results[i].data_category.includes(categoryVals[j])) {
+                        new_results.push(results[i])
                     }
                 }
             }
+            new_results = Array.from(new Set(new_results))
+            results = new_results
         }
-        results = amendedResults
 
+
+        new_results = []
+        if (custodianVals[0] != 'none') {
+            for (var i in results) {
+                for (var j in custodianVals) {
+                    if (results[i].data_custodian.includes(custodianVals[j])) {
+                        new_results.push(results[i])
+                    }
+                }
+            }
+            new_results = Array.from(new Set(new_results))
+            results = new_results
+        }
+
+        new_results = []
+        let searchFieldText = document.getElementById("metadata-search").value.toLowerCase()
+        if (searchFieldText != ''){
+            for (var i in results) {
+                for (var j in results[i]) {
+                    if (results[i][j].toLowerCase().includes(searchFieldText)) {
+                        new_results.push(results[i])
+                    }
+                }
+            }
+            new_results = Array.from(new Set(new_results))
+            results = new_results
+        }
+        
         if (results.length == 0){
-            redrawDataDisplaySelected('', "NO RESULTS")
+            redrawDataDisplaySelected('', "NO SEARCH RESULTS")
         } else{
             redrawDataDisplaySelected('', results)
         }
@@ -870,23 +914,56 @@ function toggleFilters () {
     if (drawFilters == false) {
         drawFilters = true
         let ele = document.getElementById("right-column")
+        let custodians = []
+        let categories = []
+        for (var i in metadataSources) {
+            custodians.push(metadataSources[i].data_custodian)
+
+            if (metadataSources[i].data_category.includes(", ")){
+                let categ = metadataSources[i].data_category.split(", ")
+                for (var j in categ) {
+                    categories.push(categ[j])
+                }
+            } else {
+                categories.push(metadataSources[i].data_category)
+            }
+        }
+        categories = Array.from(new Set(categories))
+        custodians = Array.from(new Set(custodians))
+        let catHTML = `<label for="category" class="inter-filter-labels"> Data Category </label>\n`
+        catHTML += '<select id="category" name="category" class="dropdown" multiple>\n'
+        catHTML += `\t<option value="none" selected>Hold "ctrl" to select multiple</option>\n`
+        for (var i in categories){
+            catHTML += `\t<option value="${categories[i]}"> ${categories[i]} </option>\n`
+        }
+        catHTML += `</select>\n`
+        
+        console.log(catHTML)
+
+        let custHTML = `<label for="custodian" class="inter-filter-labels"> Data custodian </label>\n`
+
+        custHTML += '<select id="custodian" name="custodian" class="dropdown" multiple>\n'
+        custHTML += `\t<option value="none" selected> Hold "ctrl" to select multiple </option>\n`
+        for (var i in custodians){
+            custHTML += `\t<option value="${custodians[i]}"> ${custodians[i]} </option>\n`
+        }
+        custHTML += `</select>\n`
+        console.log(custHTML)
         ele.insertAdjacentHTML("afterbegin", `<div class="search-filters-div" id="filters">
         <div class="div-floated-left">
-            <select id="available-in-platform" name="platform">
-                <option value="none" selected> </option>
+            <label for="available-in-platform" class="inter-filter-labels"> Available in Platform </label>
+            <select id="available-in-platform" name="platform" class="dropdown">
+                <option value="none" selected></option>
                 <option value="yes"> Yes </option>
                 <option value="no"> No </option>
                 <option value="all"> All </option>
             </select>
-            <label for="available-in-platform" class="inter-filter-labels"> Available in Platform </label>
         </div>
         <div class="div-floated-left"> 
-            <input type="checkbox" id="data-custodian" name="Data Custodian"> 
-            <label for="data-custodian" class="inter-filter-labels"> Data Custodian </label>
+            ${catHTML}
         </div>
         <div class="div-floated-left"> 
-            <input type="checkbox" id="data-category" name="Data Category"> 
-            <label for="data-category" class="inter-filter-labels"> Data Category </label>
+            ${custHTML}
         </div>
 
         </div> `)
@@ -895,11 +972,11 @@ function toggleFilters () {
             filterSearch()
         })
 
-        document.getElementById("data-custodian").addEventListener('change', function(e) {
+        document.getElementById("custodian").addEventListener('change', function(e) {
             filterSearch()
         })
 
-        document.getElementById("data-category").addEventListener('change', function(e) {
+        document.getElementById("category").addEventListener('change', function(e) {
             filterSearch()
         })
         

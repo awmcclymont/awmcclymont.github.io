@@ -329,7 +329,6 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    margin-top: 13px;
     margin-left: 20px;
     z-index: 2;
     display: inline;    
@@ -442,12 +441,11 @@ body {
     font-style: normal;
     font-size: 12px;
     padding-top: 2px;
-    padding-left: 3px;
-    float: left;
+    float: top;
     font-weight: 500;
     font-optical-sizing: auto;
     color: #543723;
-    float: right;
+    display: block;
 }
 
 .table-display {
@@ -461,6 +459,24 @@ body {
     table-layout: fixed;
     min-width: 10vw;
     max-width: 10vw;
+    height: 100px;
+    background-color: #f8d39a;
+    border: none;
+
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    color: #543723;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 12px;
+    padding-left: 10px;
+    cursor: pointer;
+}
+
+.table-display-no-results {
+    table-layout: fixed;
+    max-width: calc(100vw - 300px - 20vw);
+    max-width: calc(100vw - 300px - 20vw);
     height: 100px;
     background-color: #f8d39a;
     border: none;
@@ -585,6 +601,18 @@ body {
     font-style: normal;
     font-size: 12px;
     padding-left: 10px;
+}
+
+.dropdown {
+    max-height: 50px;
+    display: block;
+    float: left;
+    font-family: "Inter", sans-serif;
+    font-optical-sizing: auto;
+    color: #543723;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 10px;
 }
 
 .table-light-left-header {
