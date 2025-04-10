@@ -2,6 +2,8 @@ import { DataJson } from "./data.js";
 
 let selectedNavElement = "None"
 
+var sidePanelSelected = "None"
+
 var oldSearch;
 
 var directories
@@ -279,29 +281,16 @@ function navSelector(e) {
     if (e == "None"){
         selectedNavElement = "None";
         displayWelcome(e);
-        if (document.getElementById("metadata-search").value == ""){
-            drawUnsearchedNavPanel(e)
-        } else {
-            drawSearched(e)
-        }
+        drawSidePanelWrapper()
     } else if (e.target.innerText == selectedNavElement) {
         selectedNavElement = "None";
         let searchedText = document.getElementById("metadata-search").value
         displayWelcomeNoEscape(e);
-        if (searchedText == ""){
-            drawUnsearchedNavPanel(e)
-        } else {
-            document.getElementById("metadata-search").value = searchedText
-            drawSearched(e)
-        }
+        drawSidePanelWrapper()
     } else {
         selectedNavElement = e.target.innerText
         redrawDataWindow(selectedNavElement);
-        if (document.getElementById("metadata-search").value == ""){
-            drawUnsearchedNavPanel(e)
-        } else {
-            drawSearched(e)
-        }
+        drawSidePanelWrapper()
     }
 }
 
@@ -567,11 +556,8 @@ function drawUnsearchedNavPanel(e){
     mainHeader[0].onclick = headerReset
 }
 
-// Initial draw of the navigation panel on the left of the screen
-drawUnsearchedNavPanel();
-
 function headerReset() {
-    displayWelcomeNoEscape();
+    displayWelcome("None");
 }
 
 function calculateDepth(directoryElement) {
@@ -588,7 +574,7 @@ function drawSideNavPanel (currentNode) {
     if (currentNode.getName() != null) {
        if (document.getElementById('Navigator').innerHTML == ''){
             document.getElementById('Navigator').innerHTML +=
-            `<div class="unpadded-div"></div>
+            `<div class="unpadded-div-1"></div>
             <div class="unpadded-div">
                 <button class="nav-entry-button">
                     <div class="navEntry${calculateDepth(currentNode)}First">
@@ -597,28 +583,40 @@ function drawSideNavPanel (currentNode) {
                 </button>
             </div>` 
        } else {
-        document.getElementById('Navigator').innerHTML +=
-        `<div class="unpadded-div">
-            <button class="nav-entry-button">
-                <div class="navEntry${calculateDepth(currentNode)}">
-                    <p class="inter-nav-${calculateDepth(currentNode)}" id="${currentNode.getLocation()}"> ${currentNode.getName()} </p>
-                </div>
-            </button>
-        </div>` 
+            document.getElementById('Navigator').innerHTML +=
+            `<div class="unpadded-div">
+                <button class="nav-entry-button">
+                    <div class="navEntry${calculateDepth(currentNode)}">
+                        <p class="inter-nav-${calculateDepth(currentNode)}" id="${currentNode.getLocation()}"> ${currentNode.getName()} </p>
+                    </div>
+                </button>
+            </div>` 
        }
     }
     for (var i in currentNode.getChildren()) {
         drawSideNavPanel(currentNode.getChildren()[i])
     }
-    if (calculateDepth(currentNode) > 1) {
-        document.getElementById('Navigator').innerHTML +=
-        `<div class="unpadded-div">
-            <button class="nav-entry-button">
-                <div class="navEntry${calculateDepth(currentNode)}">
-                    <p class="inter-nav-${calculateDepth(currentNode)}" id="${currentNode.getParent().getLocation()}, Others"> Other </p>
-                </div>
-            </button>
-        </div>` 
+    if (currentNode.getParent() == null) {
+        return;
+    }
+    var siblings = currentNode.getParent().getChildren()
+    var drawOther = false;
+    for (var i in siblings) {
+        if (siblings[i].getName() == null){
+            drawOther = true
+        }
+    } 
+    if (drawOther == true) {
+        if (calculateDepth(currentNode) > 1) {
+            document.getElementById('Navigator').innerHTML +=
+            `<div class="unpadded-div">
+                <button class="nav-entry-button">
+                    <div class="navEntry${calculateDepth(currentNode)}">
+                        <p class="inter-nav-${calculateDepth(currentNode)}" id="${currentNode.getParent().getLocation()}, Others"> Other </p>
+                    </div>
+                </button>
+            </div>` 
+        }
     }
 }
 
@@ -632,6 +630,22 @@ function navOnClickHandle(e) {
     }
     toggleFilters()
     toggleFilters()
+
+    if (sidePanelSelected == selectedNavElement){
+        selectedNavElement = "None"
+        imageWidthHandler()
+        displayWelcome("None")
+        drawSidePanelWrapper()
+        document.getElementById(sidePanelSelected).parentElement.style.backgroundColor = "#FFFAE5"
+        
+        
+    } else {
+        sidePanelSelected = selectedNavElement
+        drawSidePanelWrapper()
+        document.getElementById(sidePanelSelected).parentElement.style.backgroundColor = "#fff5cd"
+    }
+
+    sidePanelSelected = selectedNavElement
 
     redrawDataDisplaySelected(selectedNavElement, '')
 }
@@ -665,8 +679,9 @@ function displaySelectionHandler(e, selectionResults) {
             break;
         }
     }
+    
     document.getElementById("display").innerHTML = ''
-    document.getElementById('display').innerHTML += `<p class="back-text">Back </p>`
+    document.getElementById('display').innerHTML += `<div class="back-div"><p class="back-text">Back </p></div>`
     document.getElementById('display').innerHTML += `<p class="inter-display-over-table">Overview Metadata </p>`
     document.getElementById('display').innerHTML += '<table class="table-class" id="display-table-overview">';
     document.getElementById('display-table-overview').innerHTML += ` 
@@ -679,9 +694,6 @@ function displaySelectionHandler(e, selectionResults) {
     for (var i in drawNode) {  
         if (overviewColumns.includes(i)) {
             if (i != "dataName"){
-                if (drawNode[i].includes("https")){
-                    console.log(drawNode[i])
-                }
                 if (colorTurn == 1){
                     document.getElementById('display-table-overview').innerHTML += ` 
                     <tr> 
@@ -703,7 +715,8 @@ function displaySelectionHandler(e, selectionResults) {
         }
     }
 
-
+    // TODO: This is where you would add an if statement to check if the metadata piece is a report e.g.:
+    // if (!drawNode.data_category.includes("report"))     <---- Something like this
     document.getElementById('display').innerHTML += "<br>"
     document.getElementById('display').innerHTML += `<p class="inter-display-over-table">Technical Metadata </p>`
     document.getElementById('display').innerHTML += '<table class="table-class" id="display-table-technical">';
@@ -738,10 +751,16 @@ function displaySelectionHandler(e, selectionResults) {
         }
     }
 
-    var back = document.getElementsByClassName("back-text")[0]
+    var back = document.getElementsByClassName("back-div")[0]
     back.onclick = function () {
         filterSearch()
     }
+
+    var buttons = document.querySelectorAll("div.navEntry");
+    for (i = 0; i < buttons.length; i++) {
+        buttons[i].onclick = navSelector
+    }
+
 }
 
 function redrawDataDisplaySelected(search, selectionResults) {
@@ -751,7 +770,7 @@ function redrawDataDisplaySelected(search, selectionResults) {
         document.getElementById('display-table').innerHTML += ` 
             <tr> 
                 <td class="table-display-no-results" id="no-results">
-                    <p class="inter-source-header""> No Results Found </p>
+                    <p class="inter-source-header"> No Results Found </p>
                 </td>
             </tr>
             `
@@ -774,6 +793,7 @@ function redrawDataDisplaySelected(search, selectionResults) {
             }
         }
     }
+    document.getElementById('display').innerHTML += `<div class="inter-display-over-table" style="padding-bottom: 10px;"> Available Metadata </div>`
     document.getElementById('display').innerHTML += '<table class="table-display" id="display-table">';
     var colorTurn = 0;
     for (var i in selectionResults) { 
@@ -806,6 +826,16 @@ function redrawDataDisplaySelected(search, selectionResults) {
             `
             colorTurn = 1;
         }
+    }
+    if (selectionResults.length == 0) {
+        document.getElementById('display').innerHTML += '<table class="table-display" id="display-table">';
+        document.getElementById('display-table').innerHTML += ` 
+            <tr> 
+                <td class="table-display-no-results" id="no-results">
+                    <p class="inter-source-header"> No Results Found </p>
+                </td>
+            </tr>
+            `
     }
 
     var buttons = document.getElementsByClassName("table-display-light")
@@ -853,7 +883,6 @@ function filterSearch () {
         const custodianEle = document.getElementById('custodian');
         const custodianVals = Array.from(custodianEle.selectedOptions).map(option => option.value);
         let new_results = []
-        console.log(categoryVals)
         if (categoryVals[0] != 'none') {
             for (var i in results) {
                 for (var j in categoryVals) {
@@ -910,7 +939,10 @@ function filterSearch () {
             }
         }
         redrawDataDisplaySelected('', results)
+        
     }
+    sidePanelSelected = "None"
+    drawSidePanelWrapper()
 }
 
 function toggleFilters () {
@@ -940,8 +972,6 @@ function toggleFilters () {
             catHTML += `\t<option value="${categories[i]}"> ${categories[i]} </option>\n`
         }
         catHTML += `</select>\n`
-        
-        console.log(catHTML)
 
         let custHTML = `<label for="custodian" class="inter-filter-labels"> Data custodian </label>\n`
 
@@ -951,10 +981,9 @@ function toggleFilters () {
             custHTML += `\t<option value="${custodians[i]}"> ${custodians[i]} </option>\n`
         }
         custHTML += `</select>\n`
-        console.log(custHTML)
         ele.insertAdjacentHTML("afterbegin", `<div class="search-filters-div" id="filters">
         <div class="div-floated-left">
-            <label for="available-in-platform" class="inter-filter-labels"> Available in Platform </label>
+            <label for="available-in-platform" class="inter-filter-labels"> In Platform </label>
             <select id="available-in-platform" name="platform" class="dropdown">
                 <option value="none" selected></option>
                 <option value="yes"> Yes </option>
@@ -1035,25 +1064,27 @@ function imageWidthHandler() {
         </div>
         <div class="right-column" id="right-column">
             <div class="data-display" id="display">
-                <p class="inter-intro-header"> Welcome to the Moreton Bay Knowledge Metadata Library</p>
+                <p class="inter-intro-header"> Welcome to the Moreton Bay Knowledge Library</p>
                 <p class="inter-paragraph-white"> 
-                This page serves a metadata library for data pertaining to different aspects of the Moreton Bay region. 
-                The metadata featured in this library stretch over several categories as you can see in the navigation panel on the left hand side of the screen.
-                As you click on the dark blue buttons on the left, the metadata included in that category will appear as a drop down selection.
+                This page is your gateway to finding a wide range of information about Moreton Bay. It brings together links to knowledge records (e.g.maps, data, reports, research) from different organisations that study and care for the Bay—we don't host the information ourselves, but we help you find where it lives.
                 </p>
                 <p class="inter-paragraph-white">
-                You can also through all metadata in the library by using the search box located in the top left of this page - just above the left hand side navigation panel.
-                This search function examines every entry of each metadata entry for whatever text that is typed into the search entry. Due to the nature of keywords,
-                and spatial references in the data searching may not not yield the data you are looking for after the first search. You may need to alter your search slightly i.e 
-                changing from "Peel Island" to "Moreton Bay" will yield significantly more results.
+                On the left-hand side of your screen, you’ll see a list of categories where you can explore a range of topics. Clicking a caregory will display the current list of knowledge records. 
                 </p>
                 <p class="inter-paragraph-white">
-                This information can be viewed at any time by hitting "Esc" on your keyboard.
+                You can also search the entire library using the search box at the top left of the page. This search checks all records for the words you type in. Sometimes, using broader or simpler terms (for example, typing “Moreton Bay” instead of “Peel Island”) can help you get better results.
                 </p>
-                
+                <p class="inter-paragraph-white">
+                Or, click the filters button near the search in the top left for a detailed search by data custodian, data category or platform availability.
+                </p>                
+                <a href="https://moretonbayfoundation.org/" target="_blank" style="text-decoration:none;"><div id="submit-data" class="contact-box">  <p style="margin-top: 5px; text-align: center;">Have we missed something? Want to get in touch? Click here.</p> </div></a>
             </div>
+
+            
         </div>
         `
+
+        // TODO CHANGE LINK ~ 5 lines above this to the google form link 
         if (oldSearch != null) {
             document.getElementById("metadata-search").value = oldSearch
         }
@@ -1081,52 +1112,11 @@ function imageWidthHandler() {
 imageWidthHandler()
 
 function displayWelcome(e) {
-    if (e.key == "Escape") {
-        navSelector("None")
-        document.getElementById("body").innerHTML = `
-        <div class="mainHeader">
-            <div class="left-float-div">
-                <p class="inter-main-header">Moreton Bay Knowledge Library</p>
-            </div>
-            <div class="right-float-div">
-                <img src="images/QUT.png" class="header-image">
-                <img src="images/MBF.png" class="header-image">
-            </div>
-        </div> 
-        <div class="left-column">
-                <div class="search-div">
-                    <input type="search" id="metadata-search" name="q" class="search-box" placeholder="&#x1F50D Search the Library">
-                    <button class="filters-button"> Filters </button>
-                </div>
-            <nav class="sideNav" id="Navigator">
-            
-            </nav>
-        </div>
-        <div class="right-column" id="right-column">
-            <div class="data-display" id="display">
-                <p class="inter-intro-header"> Welcome to the Moreton Bay Knowledge Metadata Library</p>
-                <p class="inter-paragraph-white"> 
-                This page serves a metadata library for data pertaining to different aspects of the Moreton Bay region. 
-                The metadata featured in this library stretch over several categories as you can see in the navigation panel on the left hand side of the screen.
-                As you click on the dark blue buttons on the left, the metadata included in that category will appear as a drop down selection.
-                </p>
-                <p class="inter-paragraph-white">
-                You can also through all metadata in the library by using the search box located in the top left of this page - just above the left hand side navigation panel.
-                This search function examines every entry of each metadata entry for whatever text that is typed into the search entry. Due to the nature of keywords,
-                and spatial references in the data searching may not not yield the data you are looking for after the first search. You may need to alter your search slightly i.e 
-                changing from "Peel Island" to "Moreton Bay" will yield significantly more results.
-                </p>
-                <p class="inter-paragraph-white">
-                This information can be viewed at any time by hitting "Esc" on your keyboard.
-                </p>
-                
-            </div>
-        </div>
-        `
-
+    if (e.key == "Escape" || e == "None") {
+        imageWidthHandler()
         var mainHeader = document.querySelectorAll("p.inter-main-header")
         mainHeader[0].onclick = headerReset
-
+        sidePanelSelected = "None"
         drawSidePanelWrapper();
 
         var searchF = document.getElementById("metadata-search")
@@ -1138,7 +1128,7 @@ function displayWelcome(e) {
 }
 
 function displayWelcomeNoEscape(e) {
-    navSelector("None")
+    imageWidthHandler()
     document.getElementById("body").innerHTML = `
     <div class="mainHeader">
         <div class="left-float-div">
